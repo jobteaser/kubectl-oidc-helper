@@ -65,7 +65,8 @@ kubectl config set-cluster {{ .K8SName }} \
 --certificate-authority=$tmp \
 --embed-certs=true
 
-kubectl config set-context {{ .K8SName }} --cluster={{ .K8SName }} --user='{{ .Claims.Email }}'
+kubectl config set-context {{ .K8SName }} --cluster={{ .K8SName }} --user='{{ .Claims.Email }}' --namespace=jobteaser
+kubectl config use-context {{ .K8SName }}
 
 </textarea>
 
@@ -96,7 +97,6 @@ func renderTemplate(w http.ResponseWriter, tmpl *template.Template, data interfa
 		// An ExecError guarantees that Execute has not written to the underlying reader.
 		log.Printf("Error rendering template %s: %s", tmpl.Name(), err)
 
-		// TODO(ericchiang): replace with better internal server error.
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 	default:
 		// An error with the underlying write, such as the connection being
