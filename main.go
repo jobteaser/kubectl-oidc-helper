@@ -36,8 +36,9 @@ type app struct {
 
 	client *http.Client
 
-	K8SAPI  string
-	K8SName string
+	K8SAPI         string
+	K8SName        string
+	K8SClusterCert string
 }
 
 type Claim struct {
@@ -144,6 +145,12 @@ func cmd() *cobra.Command {
 				a.client = http.DefaultClient
 			}
 
+			content, err := ioutil.ReadFile(a.K8SClusterCert)
+			if err != nil {
+				return fmt.Errorf("Failed to open kubernetes cluster certificate %q: %v", a.K8SClusterCert, err)
+			}
+			a.K8SClusterCert = string(content)
+
 			// TODO(ericchiang): Retry with backoff
 			ctx := oidc.ClientContext(context.Background(), a.client)
 			provider, err := oidc.NewProvider(ctx, issuerURL)
@@ -207,6 +214,7 @@ func cmd() *cobra.Command {
 	c.Flags().BoolVar(&debug, "debug", false, "Print all request and responses from the OpenID Connect issuer.")
 	c.Flags().StringVar(&a.K8SAPI, "k8s-api", "https://sssss", "Url to k8s api.")
 	c.Flags().StringVar(&a.K8SName, "k8s-name", "a", "Kubernetes name")
+	c.Flags().StringVar(&a.K8SClusterCert, "k8s-cert", "", "Kubernetes certificate")
 
 	return &c
 }
