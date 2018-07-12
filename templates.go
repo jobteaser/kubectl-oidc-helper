@@ -59,7 +59,7 @@ kubectl config set-credentials '{{ .Claims.Email }}' \
 --auth-provider-arg=id-token='{{ .IDToken }}'
 
 tmp=$(mktemp)
-echo "{{ .K8SClusterCert }}" | base64 --decode > $tmp
+echo "{{ .K8SClusterCert }}" | base64 --decode >> $tmp
 
 kubectl config set-cluster {{ .K8SName }} \
 --server={{ .K8SAPI }} \
